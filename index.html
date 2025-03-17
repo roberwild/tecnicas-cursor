@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Técnicas Avanzadas para Cursor</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --code-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 380px;
+            background-color: var(--dark);
+            color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .nav-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            margin-left: 380px;
+            max-width: calc(100% - 280px);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            max-width: 800px;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p, ul, ol {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            /* Se eliminó el scroll horizontal y se añade ajuste de líneas */
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: block;
+        }
+        
+        .copy-button {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.25rem;
+            color: #e2e8f0;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .copy-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .example-container {
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .example-header {
+            background-color: #f1f5f9;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .example-body {
+            padding: 1rem;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--primary-light);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip {
+            background-color: #dbeafe;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .warning {
+            background-color: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #b45309;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+        }
+		        
+        .code-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        pre {
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+		
+		    /* VS Code Theme Colors */
+        .comment { color: #6A9955; }              /* Verde */
+        .keyword { color: #569CD6; }              /* Azul */
+        .function { color: #DCDCAA; }             /* Amarillo */
+        .string { color: #CE9178; }               /* Naranja / Marrón */
+        .variable { color: #9CDCFE; }             /* Azul claro */
+        .number { color: #B5CEA8; }               /* Verde claro */
+        .operator { color: #D4D4D4; }             /* Gris claro */
+        .parameter { color: #9CDCFE; }            /* Azul claro */
+        .bracket { color: #D4D4D4; }              /* Gris claro */
+        .property { color: #9CDCFE; }             /* Azul claro */
+        .jsdoc { color: #6A9955; }                /* Verde */
+        .jsdoc-tag { color: #569CD6; }            /* Azul */
+		.heading1 { color: #569CD6; font-weight: bold; }   /* Azul */
+        .heading2 { color: #4EC9B0; font-weight: bold; }   /* Verde azulado */
+        .list-item { color: #CE9178; }                     /* Naranja */
+        .list-content { color: #D4D4D4; }                  /* Gris claro (texto normal) */
+        .special-item { color: #DCDCAA; }                  /* Amarillo */
+        .path { color: #9CDCFE; }                          /* Azul claro */
+        .file { color: #CE9178; }                          /* Naranja */
+        .dir-structure { color: #DCDCAA; }                 /* Amarillo */
+		.main-text { color: #D4D4D4; }              /* Color principal (texto normal) */
+        .section-title { color: #569CD6; }          /* Azul para secciones */
+        .file-path { color: #CE9178; }              /* Naranja para rutas de archivos */
+        .dash { color: #608B4E; }                   /* Verde para guiones */
+        .divider { color: #569CD6; }                /* Azul para divisores */
+        .key-term { color: #9CDCFE; }               /* Azul claro para términos clave */
+        .property { color: #DCDCAA; }               /* Amarillo para propiedades */
+        .instruction { color: #4EC9B0; }            /* Verde azulado para instrucciones */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Técnicas Avanzadas para Cursor</h1>
+                <p>Guía completa para aumentar tu productividad</p>
+            </div>
+
+            <div class="nav-title">Fundamentos</div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#configuracion" class="nav-link">1. Configuración Inicial</a></li>
+                <li class="nav-item"><a href="#modelos" class="nav-link">2. Selección de Modelos IA</a></li>
+                <li class="nav-item"><a href="#prompting" class="nav-link">3. Técnicas de Prompting</a></li>
+                <li class="nav-item"><a href="#estructura" class="nav-link">4. Estructura de Prompts</a></li>
+                <li class="nav-item"><a href="#documentacion" class="nav-link">5. Documentación Especializada</a></li>
+            </ul>
+
+            <div class="nav-title">Estrategias</div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#hablar-escribir" class="nav-link">6. Hablar vs. Escribir</a></li>
+                <li class="nav-item"><a href="#comentarios" class="nav-link">7. Comentarios en el Código</a></li>
+                <li class="nav-item"><a href="#deuda-tecnica" class="nav-link">8. Evitar Deuda Técnica</a></li>
+                <li class="nav-item"><a href="#claude-cursor" class="nav-link">9. Claude vs. Cursor</a></li>
+                <li class="nav-item"><a href="#nombrar-archivos" class="nav-link">10. Nombrar Archivos</a></li>
+            </ul>
+
+            <div class="nav-title">Flujos de Trabajo</div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#compositor-chat" class="nav-link">11. Compositor vs. Chat</a></li>
+                <li class="nav-item"><a href="#busqueda-web" class="nav-link">12. Uso de Búsqueda Web</a></li>
+                <li class="nav-item"><a href="#configuracion-global" class="nav-link">13. Configuración Global vs. Proyecto</a></li>
+                <li class="nav-item"><a href="#refactorizaciones" class="nav-link">14. Dividir Refactorizaciones</a></li>
+                <li class="nav-item"><a href="#roadmap" class="nav-link">15. Roadmap.MD</a></li>
+            </ul>
+
+            <div class="nav-title">Mejores Prácticas</div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#limitaciones" class="nav-link">16. Limitaciones de los Modelos</a></li>
+                <li class="nav-item"><a href="#depuracion" class="nav-link">17. Instrucciones de Depuración</a></li>
+                <li class="nav-item"><a href="#mvp" class="nav-link">18. Enfoque MVP</a></li>
+                <li class="nav-item"><a href="#decisiones" class="nav-link">19. Decisiones Importantes</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <section class="section" id="intro">
+                <h2>Introducción</h2>
+                <p>Esta guía proporciona una serie de técnicas y consejos para utilizar Cursor de manera efectiva, maximizando la productividad y la calidad del código generado con IA a través de cursor.</p>
+                 <p>Antes de comenzar, asegúrate de tener instalado Cursor y configurado tu entorno de desarrollo. Es
+            recomendable establecer ciertas reglas básicas en el archivo <code>.cursorrules</code> para unificar el
+            estilo del código.</p>
+                <div class="tip">
+                    <div class="tip-title">Consejo del instructor</div>
+                    <p>Durante el workshop, puedes usar esta guía como referencia para mostrar ejemplos prácticos de cada técnica. Recuerda que la práctica es fundamental: invita a los participantes a probar cada técnica en tiempo real.</p>
+                </div>
+            </section>
+
+            <section class="section" id="configuracion">
+                <h2>1. Configuración Inicial</h2>
+                <p>La base de una buena experiencia con Cursor es una configuración adecuada del archivo <code>.cursorrules</code>.</p>
+
+                <h3>Crear archivo .cursorrules</h3>
+                <p>Este archivo debe incluir toda la información esencial para que Cursor entienda el contexto del proyecto.</p>
+
+                <div class="example-container">
+       <div class="example-header">Ejemplo de .cursorrules</div>	         	
+                    <div class="example-body"> 
+		
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>     <code><button class="copy-button" onclick="copyCode(this)">Copiar</button>     
+<span class="heading1"># Project Overview</span>
+Vector es una aplicación de productividad impulsada por IA que ayuda a los usuarios a gestionar tareas y notas. La aplicación ofrece una experiencia sin fricciones con agentes de IA trabajando en segundo plano.
+
+<span class="heading1"># Personality</span>
+Actúa como un desarrollador senior con 15+ años de experiencia en desarrollo web. Prioriza la simplicidad y la eficiencia. Explica tu razonamiento de forma clara y concisa.
+
+<span class="heading1"># Tech Stack</span>
+<span class="list-item">- Frontend:</span><span class="list-content"> Next.js 14, React, Tailwind CSS</span>
+<span class="list-item">- Backend:</span><span class="list-content"> Node.js, Express, FastAPI (Python)</span>
+<span class="list-item">- Database:</span><span class="list-content"> Supabase (PostgreSQL)</span>
+<span class="list-item">- Authentication:</span><span class="list-content"> Auth0</span>
+<span class="list-item">- Hosting:</span><span class="list-content"> Vercel</span>
+
+<span class="heading1"># Processes</span>
+<span class="heading2">## Error Fixing Process</span>
+<span class="special-item">1. Explica el error en términos simples</span>
+<span class="special-item">2. Identifica la causa raíz</span>
+<span class="special-item">3. Propón una solución mínima y limpia</span>
+<span class="special-item">4. Verifica que la solución no introduce otros problemas</span>
+
+<span class="heading2">## Code Review Process</span>
+<span class="special-item">1. Verifica la funcionalidad</span>
+<span class="special-item">2. Evalúa la legibilidad y mantenibilidad</span>
+<span class="special-item">3. Sugiere optimizaciones si son necesarias</span>
+<span class="special-item">4. Asegúrate de que sigue las mejores prácticas</span>
+
+<span class="heading1"># Environment Variables</span>
+<span class="list-item">- DATABASE_URL:</span><span class="list-content"> URL de conexión a Supabase</span>
+<span class="list-item">- AUTH0_SECRET:</span><span class="list-content"> Clave secreta para Auth0</span>
+<span class="list-item">- AUTH0_BASE_URL:</span><span class="list-content"> URL base para Auth0</span>
+<span class="list-item">- AUTH0_ISSUER_BASE_URL:</span><span class="list-content"> URL base del emisor Auth0</span>
+<span class="list-item">- AUTH0_CLIENT_ID:</span><span class="list-content"> ID de cliente de Auth0</span>
+<span class="list-item">- AUTH0_CLIENT_SECRET:</span><span class="list-content"> Secreto de cliente de Auth0</span>
+<span class="list-item">- ANTHROPIC_API_KEY:</span><span class="list-content"> Clave API para Claude</span>
+
+<span class="heading1"># Current File Structure</span>
+<span class="dir-structure">project/</span>
+<span class="dir-structure">├── src/</span>
+<span class="dir-structure">│   ├── app/</span>
+<span class="dir-structure">│   │   ├── api/</span>
+<span class="dir-structure">│   │   │   └── tasks/</span>
+<span class="dir-structure">│   │   │       └── </span><span class="file">route.js</span>
+<span class="dir-structure">│   │   ├── dashboard/</span>
+<span class="dir-structure">│   │   │   └── </span><span class="file">page.jsx</span>
+<span class="dir-structure">│   │   ├── tasks/</span>
+<span class="dir-structure">│   │   │   └── </span><span class="file">page.jsx</span>
+<span class="dir-structure">│   │   └── </span><span class="file">layout.jsx</span>
+<span class="dir-structure">│   ├── components/</span>
+<span class="dir-structure">│   │   ├── </span><span class="file">TaskItem.jsx</span>
+<span class="dir-structure">│   │   ├── </span><span class="file">TaskList.jsx</span>
+<span class="dir-structure">│   │   └── </span><span class="file">Sidebar.jsx</span>
+<span class="dir-structure">│   ├── lib/</span>
+<span class="dir-structure">│   │   ├── </span><span class="file">db.js</span>
+<span class="dir-structure">│   │   └── </span><span class="file">utils.js</span>
+<span class="dir-structure">│   └── styles/</span>
+<span class="dir-structure">│       └── </span><span class="file">globals.css</span>
+<span class="dir-structure">├── public/</span>
+<span class="dir-structure">├── </span><span class="file">.env</span>
+<span class="dir-structure">└── </span><span class="file">package.json</span>
+
+<span class="heading1"># Most Important Instructions</span>
+<span class="list-item">- Escribe código limpio y mantenible</span>
+<span class="list-item">- No elimines comentarios existentes</span>
+<span class="list-item">- Añade comentarios para explicar lógica compleja</span>
+<span class="list-item">- Piensa como un desarrollador senior</span>
+<span class="list-item">- Prioriza la experiencia de usuario</span>
+
+<span class="heading1"># Other Context</span>
+El proyecto está en fase MVP, priorizando funcionalidad sobre características avanzadas.
+
+<span class="heading1"># Comments</span>
+Asegúrate de que cada función tenga un comentario que explique su propósito, parámetros y valor de retorno. Documenta cualquier decisión de diseño no obvia.</code></pre>
+                    </div>
+                </div>
+
+                <h3>Configurar .cursorignore</h3>
+                <p>Este archivo especifica qué archivos o patrones debe ignorar Cursor, especialmente útil para evitar la sobrescritura de variables de entorno.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de .cursorignore</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>.env
+.env.local
+node_modules/
+.next/
+dist/
+build/
+*.log</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Consejo para el workshop</div>
+                    <p>Pide a los participantes que creen su propio archivo .cursorrules para un proyecto ficticio o real. Revisa algunos ejemplos en grupo y discute las ventajas de cada enfoque.</p>
+                </div>
+            </section>
+
+            <section class="section" id="modelos">
+                <h2>2. Selección de Modelos IA</h2>
+                <p>La elección del modelo correcto puede hacer una gran diferencia en la calidad y precisión de las respuestas.</p>
+
+                <h3>Modelos recomendados</h3>
+                <ul>
+                    <li><strong>Claude 3.5 Sonnet (1022)</strong> - Modelo principal para la mayoría de tareas</li>
+                    <li><strong>Gemini Pro/Flash</strong> - Buenos para situaciones específicas o cuando Sonnet se atasca</li>
+                    <li><strong>GPT-4o</strong> - Alternativa cuando las APIs de Anthropic tienen problemas</li>
+                    <li><strong>Claude para razonamiento</strong> - Modelos o1 y o1 mini para tareas de razonamiento complejas</li>
+                </ul>
+
+                <div class="example-container">
+                    <div class="example-header">Configuración de modelos en Cursor</div>
+                    <div class="example-body">
+                        <p>En Configuración > Modelos:</p>
+                        <ul>
+                            <li>✓ Claude 3.5 Sonnet (20241022)</li>
+                            <li>✓ Gemini Pro</li>
+                            <li>✓ Gemini Flash</li>
+                            <li>✓ GPT-4o</li>
+                            <li>✓ Claude 3 Opus</li>
+                            <li>✓ Claude 3 Sonnet (reasoning)</li>
+                            <li>✓ Claude 3 Sonnet mini (reasoning)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Estrategia</div>
+                    <p>Usa principalmente Claude 3.5 Sonnet, pero si te atascas con un problema específico, prueba a cambiar a otro modelo. Diferentes modelos tienen fortalezas distintas.</p>
+                </div>
+            </section>
+
+            <section class="section" id="prompting">
+                <h2>3. Técnicas de Prompting Efectivas</h2>
+                <p>Dominar el arte del prompting es clave para obtener los mejores resultados de cualquier modelo de IA.</p>
+<p>La forma en que se formulan las instrucciones (prompts) a Cursor tiene un gran impacto en los resultados.
+            Algunas técnicas efectivas incluyen:</p>
+        <ul>
+            <li><strong>Start reasoning with uncertainty:</strong> Comienza tus prompts expresando la necesidad de
+                razonar *antes* de llegar a una solución.  Ejemplo: "Let's think step by step about how to..."
+            </li>
+            <li><strong>Ser específico:</strong> Cuanto más detallado sea el prompt, mejor. Incluye ejemplos del formato
+                de salida deseado.</li>
+            <li><strong>Dividir tareas complejas:</strong> En lugar de pedir una solución completa de una vez, divide el
+                problema en subtareas más pequeñas.</li>
+            <li><strong>Usar "few-shot learning":</strong> Proporciona algunos ejemplos de entrada y salida para guiar al
+                modelo.</li>
+        </ul>
+<h3>Ejemplos de Prompts:</h3>
+                <div class="example-container">
+                    <div class="example-header">"The fewer lines of code, the better"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito una función que valide direcciones de email. Por favor, mantenla simple y eficiente. The fewer lines of code, the better.</code></pre>
+                        <p><em>Este prompt evita que el modelo intente impresionarte con código innecesariamente complejo.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Proceed like a senior developer"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Tengo un problema con mi sistema de autenticación en Next.js. Los tokens no se están renovando correctamente. Proceed like a senior developer para diagnosticar y resolver este problema.</code></pre>
+                        <p><em>Mejora la calidad del código y el enfoque de resolución de problemas.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Do not stop working until you've implemented this feature fully"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito implementar un componente de calendario que permita a los usuarios programar tareas. Debe incluir vista mensual, semanal y diaria, y permitir arrastrar y soltar eventos. Do not stop working until you've implemented this feature fully and completely.</code></pre>
+                        <p><em>Reduce la "pereza" del modelo y evita que deje implementaciones a medias.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Start by writing three reasoning paragraphs"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Hay un error en este componente React. Cuando intentamos actualizar el estado, la aplicación se bloquea con el error "Cannot read properties of undefined (reading 'map')". Start by writing three reasoning paragraphs analyzing what the error might be. Do not jump to conclusions.</code></pre>
+                        <p><em>Fuerza al modelo a analizar el problema a fondo antes de proponer soluciones.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Answer in short"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>¿Cuáles son las mejores prácticas para implementar el manejo de estado en una aplicación React grande? Answer in short.</code></pre>
+                        <p><em>Obtiene respuestas concisas cuando no necesitas explicaciones detalladas.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Do not delete comments"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Refactoriza esta función para mejorar su rendimiento. Do not delete comments.</code></pre>
+                        <p><em>Evita que el modelo elimine la documentación importante del código.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Summary of current state"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Before we proceed, I need you to give me a summary of the current state of our task management implementation. What files we've modified, what funcionalidades have been implemented, and what issues remain pending. Describe as if you were a senior developer briefing another programmer who's just joined the project.</code></pre>
+                        <p><em>Útil cuando necesitas transferir contexto entre sesiones del compositor.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Unbiased 50/50"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Estoy considerando dos enfoques para la arquitectura de datos de mi aplicación:
+1. Usar GraphQL para todas las consultas de datos
+2. Utilizar REST API con endpoints específicos
+
+Before you answer, I want you to write two detailed paragraphs, one arguing for each of these Solutions. Do not jump to conclusions. Seriously consider both approaches. Then after you finish, tell me which one of these solutions is obviously better for a small-to-medium app con ~5000 usuarios and why.</code></pre>
+                        <p><em>Obtiene un análisis equilibrado cuando estás decidiendo entre alternativas.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Properly formed search query"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Your task is to write a one paragraph search query as if you were telling a human researcher what to find, including all the relevant context. Format the paragraph as clear instructions commanding a researcher to find what we're looking for. Ask for code snippets or technical details when relevant.
+
+Necesito entender cómo implementar correctamente la autenticación JWT en una aplicación Next.js 14 con App Router y cómo manejar la renovación de tokens.</code></pre>
+                        <p><em>Optimiza búsquedas web en Perplexity o ChatGPT.</em></p>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">"Start reasoning with uncertainty"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Analiza por qué este componente React podría estar causando re-renders innecesarios. You should start the reasoning paragraph with lots of uncertainty and slowly gain confidence as you think about the item more.</code></pre>
+                        <p><em>Mejora el proceso de razonamiento de los modelos, evitando conclusiones prematuras.</em></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="estructura">
+                <h2>4. Estructura de Prompts para Desarrollo</h2>
+                <p>Una estructura consistente en tus prompts mejora significativamente la calidad de las respuestas.</p>
+
+                <h3>Esquema recomendado:</h3>
+                <ol>
+                    <li>Explicar objetivo (2-4 oraciones)</li>
+                    <li>Etiquetar archivos relevantes</li>
+                    <li>Especificar cómo ejecutar e instrucciones específicas</li>
+                    <li>Incluir dump de contexto (documentación, etc.)</li>
+                    <li>Usar delimitadores para separar secciones</li>
+                    <li>Repetir instrucción principal</li>
+                    <li>Especificar formato de salida deseado</li>
+                </ol>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de prompt estructurado</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code><span class="main-text">Quiero crear un sistema de notificaciones en tiempo real para mi aplicación web.</span>
+
+<span class="section-title">Archivos relevantes:</span>
+<span class="dash">-</span> <span class="file-path">src/components/Notification.jsx</span>
+<span class="dash">-</span> <span class="file-path">src/lib/notificationService.js</span>
+<span class="dash">-</span> <span class="file-path">src/context/NotificationContext.jsx</span>
+
+<span class="main-text">Quiero usar WebSockets para las notificaciones en tiempo real y mostrar un toast cuando llegue una nueva notificación. Las notificaciones deben agruparse si hay muchas y permitir al usuario marcarlas como leídas.</span>
+
+<span class="section-title">Contexto adicional:</span>
+<span class="dash">-</span> <span class="main-text">Estamos usando </span><span class="key-term">Socket.io</span><span class="main-text"> en el backend</span>
+<span class="dash">-</span> <span class="main-text">Las notificaciones se almacenan en </span><span class="key-term">Supabase</span>
+<span class="dash">-</span> <span class="main-text">Cada notificación tiene: </span><span class="property">id</span><span class="main-text">, </span><span class="property">userId</span><span class="main-text">, </span><span class="property">message</span><span class="main-text">, </span><span class="property">type</span><span class="main-text">, </span><span class="property">createdAt</span><span class="main-text">, </span><span class="property">read</span>
+
+<span class="divider">---</span>
+
+<span class="instruction">Necesito que implementes primero el servicio de notificaciones, luego el contexto, y finalmente el componente que mostrará las notificaciones. Piensa como un desarrollador senior y asegúrate de manejar los casos extremos. El código debe ser limpio y bien comentado.</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Consejo para el workshop</div>
+                    <p>Proporciona un problema de código y pide a los participantes que creen un prompt estructurado siguiendo este esquema. Compara los resultados y discute las diferencias.</p>
+                </div>
+            </section>
+
+            <section class="section" id="documentacion">
+                <h2>5. Documentación Especializada</h2>
+                <p>Crear archivos markdown específicos para documentar componentes clave del proyecto mejora significativamente el contexto disponible para Cursor.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo: Database Structure - Supabase.md</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code><span class="heading1"># Database Structure - Supabase.md</span>
+
+<span class="heading2">## Tables</span>
+
+<span class="heading3">### users</span>
+<span class="dash">-</span> <span class="property">id:</span> <span class="data-type">uuid</span> <span class="comment">(primary key, generated by auth)</span>
+<span class="dash">-</span> <span class="property">email:</span> <span class="data-type">text</span> <span class="comment">(unique, not null)</span>
+<span class="dash">-</span> <span class="property">name:</span> <span class="data-type">text</span>
+<span class="dash">-</span> <span class="property">avatar_url:</span> <span class="data-type">text</span>
+<span class="dash">-</span> <span class="property">created_at:</span> <span class="data-type">timestamp with time zone</span> <span class="comment">(default: now())</span>
+
+<span class="heading3">### tasks</span>
+<span class="dash">-</span> <span class="property">id:</span> <span class="data-type">uuid</span> <span class="comment">(primary key)</span>
+<span class="dash">-</span> <span class="property">title:</span> <span class="data-type">text</span> <span class="comment">(not null)</span>
+<span class="dash">-</span> <span class="property">description:</span> <span class="data-type">text</span>
+<span class="dash">-</span> <span class="property">due_date:</span> <span class="data-type">timestamp with time zone</span>
+<span class="dash">-</span> <span class="property">priority:</span> <span class="data-type">integer</span> <span class="comment">(1-3, default: 2)</span>
+<span class="dash">-</span> <span class="property">status:</span> <span class="data-type">text</span> <span class="comment">(default: 'pending')</span>
+<span class="dash">-</span> <span class="property">user_id:</span> <span class="data-type">uuid</span> <span class="comment">(foreign key to users.id)</span>
+<span class="dash">-</span> <span class="property">created_at:</span> <span class="data-type">timestamp with time zone</span> <span class="comment">(default: now())</span>
+<span class="dash">-</span> <span class="property">updated_at:</span> <span class="data-type">timestamp with time zone</span> <span class="comment">(default: now())</span>
+
+<span class="heading3">### notes</span>
+<span class="dash">-</span> <span class="property">id:</span> <span class="data-type">uuid</span> <span class="comment">(primary key)</span>
+<span class="dash">-</span> <span class="property">content:</span> <span class="data-type">text</span> <span class="comment">(not null)</span>
+<span class="dash">-</span> <span class="property">user_id:</span> <span class="data-type">uuid</span> <span class="comment">(foreign key to users.id)</span>
+<span class="dash">-</span> <span class="property">task_id:</span> <span class="data-type">uuid</span> <span class="comment">(foreign key to tasks.id, nullable)</span>
+<span class="dash">-</span> <span class="property">created_at:</span> <span class="data-type">timestamp with time zone</span> <span class="comment">(default: now())</span>
+<span class="dash">-</span> <span class="property">updated_at:</span> <span class="data-type">timestamp with time zone</span> <span class="comment">(default: now())</span>
+
+<span class="heading2">## RLS Policies</span>
+
+<span class="heading3">### users</span>
+<span class="dash">-</span> <span class="keyword">SELECT:</span> <span class="list-content">authenticated user can only view their own record</span>
+<span class="dash">-</span> <span class="keyword">UPDATE:</span> <span class="list-content">authenticated user can only update their own record</span>
+
+<span class="heading3">### tasks</span>
+<span class="dash">-</span> <span class="keyword">SELECT:</span> <span class="list-content">authenticated user can only view their own tasks</span>
+<span class="dash">-</span> <span class="keyword">INSERT:</span> <span class="list-content">authenticated user can only create tasks for themselves</span>
+<span class="dash">-</span> <span class="keyword">UPDATE:</span> <span class="list-content">authenticated user can only update their own tasks</span>
+<span class="dash">-</span> <span class="keyword">DELETE:</span> <span class="list-content">authenticated user can only delete their own tasks</span>
+
+<span class="heading3">### notes</span>
+<span class="dash">-</span> <span class="keyword">SELECT:</span> <span class="list-content">authenticated user can only view their own notes</span>
+<span class="dash">-</span> <span class="keyword">INSERT:</span> <span class="list-content">authenticated user can only create notes for themselves</span>
+<span class="dash">-</span> <span class="keyword">UPDATE:</span> <span class="list-content">authenticated user can only update their own notes</span>
+<span class="dash">-</span> <span class="keyword">DELETE:</span> <span class="list-content">authenticated user can only delete their own notes</span>
+
+<span class="heading2">## Indices</span>
+<span class="dash">-</span> <span class="property">tasks(user_id)</span>
+<span class="dash">-</span> <span class="property">tasks(due_date)</span>
+<span class="dash">-</span> <span class="property">notes(user_id)</span>
+<span class="dash">-</span> <span class="property">notes(task_id)</span>
+
+<span class="heading2">## Functions</span>
+<span class="dash">-</span> <span class="function">function_update_timestamp():</span> <span class="list-content">Actualiza el campo updated_at automáticamente</span>
+
+<span class="heading2">## Triggers</span>
+<span class="dash">-</span> <span class="property">update_tasks_timestamp:</span> <span class="list-content">Actualiza tasks.updated_at cuando se modifica</span>
+<span class="dash">-</span> <span class="property">update_notes_timestamp:</span> <span class="list-content">Actualiza notes.updated_at cuando se modifica</span></code></pre>
+                    </div>
+                </div>
+
+                <p>Otros ejemplos de archivos de documentación especializada:</p>
+                <ul>
+                    <li><strong>DesignPrinciples.md</strong> - Guías de diseño y UX</li>
+                    <li><strong>APIEndpoints.md</strong> - Documentación de endpoints</li>
+                    <li><strong>Authentication.md</strong> - Flujo de autenticación</li>
+                </ul>
+
+                <p>Para utilizar estos archivos, simplemente etiquétalos en tus prompts:</p>
+                <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito actualizar el modelo de datos para añadir una nueva entidad "Proyectos".
+
+Archivos relevantes:
+- src/lib/db.js
+- Database Structure - Supabase.md</code></pre>
+            </section>
+
+            <section class="section" id="hablar-escribir">
+                <h2>6. Hablar vs. Escribir</h2>
+                <p>Usar herramientas de dictado puede aumentar dramáticamente tu velocidad de comunicación con Cursor.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Comparación</div>
+                    <div class="example-body">
+                        <h4>Escribiendo (lento):</h4>
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito crear un componente para mostrar un gráfico de líneas que visualice el progreso del usuario en completar tareas durante la semana. Debe usar la biblioteca recharts, mostrar los días de la semana en el eje X y el número de tareas completadas en el eje Y. Necesita ser responsivo y mostrar tooltips cuando el usuario pasa el cursor sobre los puntos de datos. Los colores deben coincidir con nuestro tema de la aplicación.</code></pre>
+
+                        <h4>Hablando (rápido) con Whisper Flow:</h4>
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesitamos un componente de gráfico de progreso para el dashboard. Usamos recharts para esto. En el eje X ponemos los días de la semana, lunes a domingo. En el eje Y el número de tareas completadas cada día. Hay que hacer que sea responsivo, así que debe ajustarse bien tanto en móvil como en escritorio. Quiero tooltips cuando el usuario haga hover sobre los puntos de datos, mostrando el día exacto y número de tareas. Los colores deben seguir nuestra paleta principal: azul primario para la línea principal, verde para tareas completadas si añadimos esa métrica después. Necesitamos manejar el caso de que no haya datos también, mostrando un mensaje amigable. Y añade una leyenda en la parte inferior.</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Herramienta recomendada</div>
+                    <p>Whisper Flow es una herramienta gratuita que permite hablar tus prompts. La velocidad del habla (≈250 palabras/min) supera significativamente la velocidad de escritura promedio (≈120 palabras/min).</p>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Consejo para el workshop</div>
+                    <p>Realiza una demostración en vivo de Whisper Flow y pide a los participantes que comparen la experiencia de escribir vs. hablar un prompt complejo.</p>
+                </div>
+            </section>
+
+            <section class="section" id="comentarios">
+                <h2>7. Comentarios en el Código</h2>
+                <p>Los comentarios son cruciales cuando se trabaja con IA, proporcionando contexto que mejora la comprensión del código.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de código bien comentado</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code><span class="jsdoc">/**
+ * TaskPriorityManager - Gestiona la priorización automática de tareas
+ * 
+ * Este componente analiza las fechas de vencimiento, dependencias entre tareas
+ * y patrones históricos del usuario para sugerir prioridades.
+ * 
+ * </span><span class="jsdoc-tag">@param</span><span class="jsdoc"> {</span><span class="variable">Array</span><span class="jsdoc">} tasks - Lista de tareas a priorizar
+ * </span><span class="jsdoc-tag">@param</span><span class="jsdoc"> {</span><span class="variable">Object</span><span class="jsdoc">} userPreferences - Preferencias del usuario para la priorización
+ * </span><span class="jsdoc-tag">@returns</span><span class="jsdoc"> {</span><span class="variable">Array</span><span class="jsdoc">} - Lista de tareas con prioridades sugeridas
+ */</span>
+<span class="keyword">function</span> <span class="function">TaskPriorityManager</span><span class="bracket">(</span><span class="bracket">{</span> <span class="parameter">tasks</span>, <span class="parameter">userPreferences</span> <span class="bracket">}</span><span class="bracket">)</span> <span class="bracket">{</span>
+  <span class="comment">// Ordenamos primero por fecha de vencimiento (las más próximas primero)</span>
+  <span class="comment">// Esto establece una base inicial para la priorización</span>
+  <span class="keyword">const</span> <span class="variable">sortedByDueDate</span> <span class="operator">=</span> <span class="bracket">[</span>...<span class="variable">tasks</span><span class="bracket">]</span>.<span class="function">sort</span><span class="bracket">(</span><span class="bracket">(</span><span class="parameter">a</span>, <span class="parameter">b</span><span class="bracket">)</span> <span class="operator">=></span> <span class="bracket">{</span>
+    <span class="keyword">if</span> <span class="bracket">(</span><span class="operator">!</span><span class="variable">a</span>.<span class="property">dueDate</span><span class="bracket">)</span> <span class="keyword">return</span> <span class="number">1</span>;  <span class="comment">// Sin fecha de vencimiento = baja prioridad</span>
+    <span class="keyword">if</span> <span class="bracket">(</span><span class="operator">!</span><span class="variable">b</span>.<span class="property">dueDate</span><span class="bracket">)</span> <span class="keyword">return</span> <span class="operator">-</span><span class="number">1</span>; <span class="comment">// Sin fecha de vencimiento = baja prioridad</span>
+    <span class="keyword">return</span> <span class="keyword">new</span> <span class="function">Date</span><span class="bracket">(</span><span class="variable">a</span>.<span class="property">dueDate</span><span class="bracket">)</span> <span class="operator">-</span> <span class="keyword">new</span> <span class="function">Date</span><span class="bracket">(</span><span class="variable">b</span>.<span class="property">dueDate</span><span class="bracket">)</span>;
+  <span class="bracket">}</span><span class="bracket">)</span>;
+  
+  <span class="comment">// Aplicamos factores de ajuste basados en preferencias del usuario</span>
+  <span class="comment">// Por ejemplo, algunos usuarios priorizan tareas profesionales sobre personales</span>
+  <span class="keyword">const</span> <span class="variable">withUserPreferences</span> <span class="operator">=</span> <span class="variable">sortedByDueDate</span>.<span class="function">map</span><span class="bracket">(</span><span class="parameter">task</span> <span class="operator">=></span> <span class="bracket">{</span>
+    <span class="keyword">let</span> <span class="variable">priorityScore</span> <span class="operator">=</span> <span class="function">getBasePriorityScore</span><span class="bracket">(</span><span class="variable">task</span><span class="bracket">)</span>;
+    
+    <span class="comment">// Ajustamos según categoría (trabajo, personal, etc.)</span>
+    <span class="keyword">if</span> <span class="bracket">(</span><span class="variable">userPreferences</span>.<span class="property">categoryWeights</span><span class="bracket">[</span><span class="variable">task</span>.<span class="property">category</span><span class="bracket">]</span><span class="bracket">)</span> <span class="bracket">{</span>
+      <span class="variable">priorityScore</span> <span class="operator">*=</span> <span class="variable">userPreferences</span>.<span class="property">categoryWeights</span><span class="bracket">[</span><span class="variable">task</span>.<span class="property">category</span><span class="bracket">]</span>;
+    <span class="bracket">}</span>
+    
+    <span class="comment">// Ajustamos según historial de completado del usuario</span>
+    <span class="comment">// Las tareas similares a las que el usuario suele completar rápido reciben boost</span>
+    <span class="keyword">const</span> <span class="variable">completionFactor</span> <span class="operator">=</span> <span class="function">getHistoricalCompletionFactor</span><span class="bracket">(</span><span class="variable">task</span>, <span class="variable">userPreferences</span><span class="bracket">)</span>;
+    <span class="variable">priorityScore</span> <span class="operator">*=</span> <span class="variable">completionFactor</span>;
+    
+    <span class="keyword">return</span> <span class="bracket">{</span>
+      ...<span class="variable">task</span>,
+      <span class="property">suggestedPriority</span>: <span class="function">calculateFinalPriority</span><span class="bracket">(</span><span class="variable">priorityScore</span><span class="bracket">)</span>
+    <span class="bracket">}</span>;
+  <span class="bracket">}</span><span class="bracket">)</span>;
+  
+  <span class="comment">// Ordenamos por puntuación final de prioridad</span>
+  <span class="keyword">return</span> <span class="variable">withUserPreferences</span>.<span class="function">sort</span><span class="bracket">(</span><span class="bracket">(</span><span class="parameter">a</span>, <span class="parameter">b</span><span class="bracket">)</span> <span class="operator">=></span> <span class="variable">b</span>.<span class="property">suggestedPriority</span> <span class="operator">-</span> <span class="variable">a</span>.<span class="property">suggestedPriority</span><span class="bracket">)</span>;
+<span class="bracket">}</span>
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Mejores prácticas:</h3>
+                <ul>
+                    <li>Meta: 1 línea de comentario por cada 3-4 líneas de código</li>
+                    <li>Documentar el "por qué" más que el "qué"</li>
+                    <li>Explicar decisiones no obvias</li>
+                    <li>Añadir JSDoc/docstrings para funciones</li>
+                    <li>Mantener comentarios actualizados</li>
+                </ul>
+
+                <div class="example-container">
+                    <div class="example-header">Prompt para mejorar comentarios</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Revisa este código y añade comentarios detallados. Explica tu pensamiento en los comentarios, asegurándote de documentar todas las partes no obvias. Usa JSDoc para las funciones.</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">Importante</div>
+                    <p>Los comentarios son cada vez más importantes a medida que la IA se encarga de más código. El futuro será etiquetar archivos y proporcionar contexto, y los comentarios serán la forma principal en que los humanos comuniquen la intención a los modelos.</p>
+                </div>
+            </section>
+
+            <section class="section" id="deuda-tecnica">
+                <h2>8. Evitar Deuda Técnica</h2>
+                <p>Es tentador dejar que la IA haga todo el trabajo, pero entender el código es esencial para evitar problemas a largo plazo.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Mal enfoque (acumulando deuda técnica)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Implementa un sistema completo de autenticación con OAuth, manejo de tokens, renovación automática, autenticación de dos factores y sistema de permisos basado en roles. Usa la biblioteca más avanzada disponible.</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">Buen enfoque (implementación progresiva)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Primero, implementemos la autenticación básica con email y contraseña usando Auth0. Quiero entender completamente cómo funciona antes de avanzar.
+
+Una vez que tengamos eso funcionando, probado y documentado, podemos ver si necesitamos añadir OAuth para login social.</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">La trampa de la deuda técnica</div>
+                    <p>Tu capacidad para aprovechar la IA está limitada por tu nivel de comprensión. Si permites que la IA implemente funcionalidades que no entiendes, eventualmente te encontrarás con problemas que no podrás resolver.</p>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Para el workshop</div>
+                    <p>Discute experiencias reales de acumulación de deuda técnica y cómo reconocer las señales de advertencia. Desarrolla un "radar interno" para detectar cuándo estás avanzando demasiado rápido sin entender el código.</p>
+                </div>
+            </section>
+
+            <section class="section" id="claude-cursor">
+                <h2>9. Claude vs. Cursor</h2>
+                <p>Utilizar diferentes herramientas para diferentes propósitos puede optimizar tu flujo de trabajo.</p>
+
+                <div class="example-container">
+                    <div class="example-header">En Claude (como consultor)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Estoy diseñando un sistema de recomendación para mi aplicación de productividad. Los usuarios tienen tareas con diferentes etiquetas, prioridades y fechas. ¿Cuál sería la mejor estrategia para recomendar qué tareas deberían completar primero? ¿Debería usar un enfoque basado en reglas o implementar un algoritmo de aprendizaje automático simple?</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">En Cursor (para implementación)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Implementa un sistema de recomendación basado en reglas para ordenar las tareas según:
+1. Fecha de vencimiento (más cercana primero)
+2. Prioridad establecida por el usuario
+3. Dependencias entre tareas
+
+Archivos relevantes:
+- src/lib/taskPrioritization.js
+- src/components/TaskRecommendations.jsx</code></pre>
+                    </div>
+                </div>
+
+                <h3>Estrategia recomendada:</h3>
+                <ul>
+                    <li><strong>Claude:</strong> Para consultoría, brainstorming, decisiones estratégicas y planificación</li>
+                    <li><strong>Cursor:</strong> Para implementación de código, debugging y cambios específicos</li>
+                </ul>
+
+                <div class="tip">
+                    <div class="tip-title">Beneficio</div>
+                    <p>Esta separación ayuda a mantener sesiones de Cursor más enfocadas y evita que el contexto se sobrecargue. Claude puede mantenerse libre de la influencia directa del código y ofrecer una perspectiva más "limpia".</p>
+                </div>
+            </section>
+
+            <section class="section" id="nombrar-archivos">
+                <h2>10. Nombrar Archivos Correctamente</h2>
+                <p>Incluir la ruta completa al principio de los archivos ayuda a la IA a entender la estructura del proyecto.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code><span class="comment">// src/app/dashboard/components/TaskMetrics.jsx</span>
+<span class="import">import</span> <span class="variable">React</span> <span class="import">from</span> <span class="string">'react'</span>;
+<span class="import">import</span> <span class="bracket">{</span> <span class="component">BarChart</span>, <span class="component">Bar</span>, <span class="component">XAxis</span>, <span class="component">YAxis</span>, <span class="component">Tooltip</span>, <span class="component">ResponsiveContainer</span> <span class="bracket">}</span> <span class="import">from</span> <span class="string">'recharts'</span>;
+
+<span class="comment">// Este componente muestra métricas de tareas completadas por categoría</span>
+<span class="comment">// Se utiliza en el dashboard principal para dar una visión general del progreso</span>
+<span class="export">export</span> <span class="default">default</span> <span class="keyword">function</span> <span class="function">TaskMetrics</span><span class="bracket">(</span><span class="bracket">{</span> <span class="destructuring">taskData</span> <span class="bracket">}</span><span class="bracket">)</span> <span class="bracket">{</span>
+  <span class="comment">// ...</span>
+<span class="bracket">}</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">¿Por qué es importante?</div>
+                    <p>Cursor puede "ver" la estructura de archivos, pero cuando copias código a Claude u otra herramienta, esta información se pierde. Incluir la ruta en un comentario al principio del archivo mantiene este contexto crucial.</p>
+                </div>
+
+                <p>Esta práctica es especialmente útil cuando:</p>
+                <ul>
+                    <li>Tienes múltiples archivos con nombres similares (como page.jsx)</li>
+                    <li>Utilizas Claude u otros modelos fuera de Cursor</li>
+                    <li>Necesitas que la IA entienda relaciones entre archivos</li>
+                </ul>
+            </section>
+
+            <section class="section" id="compositor-chat">
+                <h2>11. Compositor vs. Chat</h2>
+                <p>Cursor ofrece diferentes interfaces para diferentes tipos de interacciones.</p>
+
+                <div class="example-container">
+                    <div class="example-header">En Chat (pregunta informativa)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>¿Cuáles son las mejores prácticas para manejar la caché en Next.js 14 con el App Router?</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">En Compositor (cambio de código)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito implementar un sistema de caché eficiente para mis llamadas a la API en Next.js 14.
+
+Archivos relevantes:
+- src/lib/api.js
+- src/app/api/tasks/route.js
+
+Por favor, implementa un sistema que:
+1. Cache las respuestas por un tiempo configurable
+2. Permita invalidar la caché manualmente
+3. Respete los encabezados de caché del servidor</code></pre>
+                    </div>
+                </div>
+
+                <h3>Reglas generales:</h3>
+                <ul>
+                    <li><strong>Chat:</strong> Para preguntas, consultas, información</li>
+                    <li><strong>Compositor:</strong> Para cambios de código y ediciones</li>
+                    <li><strong>Modo Agente:</strong> Para cambios complejos que involucran múltiples archivos o comandos de terminal</li>
+                </ul>
+
+                <div class="tip">
+                    <div class="tip-title">¿Cuándo crear un nuevo compositor?</div>
+                    <p>Crea un nuevo compositor cuando notes comportamientos extraños o cuando el modelo comience a olvidar información clave. Esto indica que el contexto está sobrecargado. Usa el prompt "Summary of current state" para transferir información importante al nuevo compositor.</p>
+                </div>
+            </section>
+
+            <section class="section" id="busqueda-web">
+                <h2>12. Uso de Búsqueda Web</h2>
+                <p>Integrar búsquedas web puede mejorar significativamente la precisión de las respuestas, especialmente para información actualizada.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Prompt para búsqueda optimizada</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Your task is to write a one paragraph search query as if you were telling a human researcher what to find, including all the relevant context. Format the paragraph as clear instructions commanding a researcher to find what we're looking for. Ask for code snippets or technical details when relevant.
+
+Investiga las últimas mejores prácticas (a partir de 2024) para optimizar el rendimiento de aplicaciones Next.js 14 con App Router. Busca específicamente técnicas de Server Components vs. Client Components, estrategias de prefetching, y optimización de imágenes. Necesito ejemplos de código y patrones recomendados por la documentación oficial o expertos reconocidos.</code></pre>
+                    </div>
+                </div>
+
+                <h3>Proceso recomendado:</h3>
+                <ol>
+                    <li>Usa el prompt anterior para formular una consulta clara</li>
+                    <li>Copia la consulta generada a Perplexity y/o ChatGPT</li>
+                    <li>Copia las respuestas de vuelta a Cursor</li>
+                    <li>Pide a Cursor un resumen usando este prompt adicional:</li>
+                </ol>
+
+                <div class="example-container">
+                    <div class="example-header">Prompt para resumir resultados</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Dame el TLDR de los resultados de búsqueda. Be careful though, often the search results contain dangerous and distracting red herrings.</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">¿Cuándo usar búsqueda web?</div>
+                    <p>Utiliza búsqueda web cuando necesites:</p>
+                    <ul>
+                        <li>Documentación actualizada (posterior al cutoff del modelo)</li>
+                        <li>Resolver errores persistentes</li>
+                        <li>Información sobre nuevas bibliotecas o frameworks</li>
+                        <li>Mejores prácticas actualizadas</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section" id="configuracion-global">
+                <h2>13. Configuración Global vs. Proyecto</h2>
+                <p>Cursor ofrece dos niveles de configuración para las instrucciones a la IA.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Rules for AI (global)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>  <code><span class="heading1"># Rules for AI</span>
+
+<span class="heading2">## Fundamental Principles</span>
+<span class="dash">-</span> <span class="rule">Prioriza siempre la legibilidad y mantenibilidad</span>
+<span class="dash">-</span> <span class="rule">Escribe código modular y reutilizable</span>
+<span class="dash">-</span> <span class="rule">Sigue las convenciones estándar de cada lenguaje</span>
+<span class="dash">-</span> <span class="rule">Evita soluciones complejas cuando las simples funcionen</span>
+
+<span class="heading2">## Building Process</span>
+<span class="dash">-</span> <span class="rule">Implementa funcionalidades una por una</span>
+<span class="dash">-</span> <span class="rule">Prueba cada cambio antes de avanzar</span>
+<span class="dash">-</span> <span class="rule">Considera la escalabilidad desde el principio</span>
+<span class="dash">-</span> <span class="rule">Documenta las decisiones de diseño importantes</span>
+
+<span class="heading2">## Error Fixing</span>
+<span class="dash">-</span> <span class="rule">Analiza la causa raíz, no solo los síntomas</span>
+<span class="dash">-</span> <span class="rule">Considera efectos secundarios de cualquier fix</span>
+<span class="dash">-</span> <span class="rule">Añade tests para evitar regresiones</span>
+
+<span class="heading2">## Comments</span>
+<span class="dash">-</span> <span class="rule">Documenta el <span class="emphasis">"por qué"</span>, no solo el <span class="emphasis">"qué"</span></span>
+<span class="dash">-</span> <span class="rule">Comenta decisiones no obvias</span>
+<span class="dash">-</span> <span class="rule">Mantén comentarios actualizados con el código</span></code></pre>
+                    </div>
+                </div>
+
+                <h3>Diferencias clave:</h3>
+                <ul>
+                    <li><strong>Rules for AI (global):</strong> Aplicado a todos los proyectos en Cursor, incluyendo sesiones de chat y Comando K</li>
+                    <li><strong>.cursorrules (proyecto):</strong> Específico para un proyecto, contiene información contextual sobre ese proyecto particular</li>
+                </ul>
+
+                <div class="tip">
+                    <div class="tip-title">Estrategia recomendada</div>
+                    <p>Usa Rules for AI para mejores prácticas generales de código que deseas aplicar en todos tus proyectos, y .cursorrules para información específica del proyecto actual.</p>
+                </div>
+
+                <p>Acceso: Configuración > Rules for AI</p>
+            </section>
+
+            <section class="section" id="refactorizaciones">
+                <h2>14. Dividir Refactorizaciones Grandes</h2>
+                <p>Las refactorizaciones complejas tienen más éxito cuando se dividen en pasos manejables.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Prompt para dividir tareas</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Necesito refactorizar nuestro sistema de manejo de estado que actualmente usa muchos componentes con estado local a una solución más centralizada con Context API o Redux.
+
+Break this down into required steps. Only include truly necessary steps.</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">Respuesta</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Pasos necesarios para refactorizar el manejo de estado:
+
+1. Analizar el estado actual: Identificar todos los componentes con estado local y mapear las dependencias entre ellos.
+
+2. Diseñar la estructura de estado centralizada: Definir qué partes del estado deben moverse a Context/Redux y cuáles pueden permanecer locales.
+
+3. Implementar los contextos/reducers: Crear la estructura básica para el estado global.
+
+4. Migrar un grupo funcional a la vez: Empezar con un conjunto relacionado de componentes (ej. autenticación).
+
+5. Actualizar los componentes: Refactorizar para consumir el estado global en lugar del local.
+
+6. Pruebas: Verificar que cada grupo funcional mantiene su comportamiento después de la refactorización.</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Beneficios</div>
+                    <p>Esta técnica te permite:</p>
+                    <ul>
+                        <li>Probar cada paso individualmente</li>
+                        <li>Hacer commits incrementales</li>
+                        <li>Detectar problemas tempranamente</li>
+                        <li>Mantener el progreso aunque una parte sea problemática</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">Importante</div>
+                    <p>Añadir "Only include truly necessary steps" evita que el modelo añada pasos opcionales o "nice-to-have" que podrían complicar innecesariamente la refactorización.</p>
+                </div>
+            </section>
+
+            <section class="section" id="roadmap">
+                <h2>15. Roadmap.MD</h2>
+                <p>Un archivo dedicado al roadmap del proyecto proporciona contexto crucial sobre la dirección y el estado actual.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de Roadmap.MD</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code><span class="heading1"># Roadmap.MD</span>
+
+<span class="heading2">## Estado Actual (<span class="date">16 Marzo 2025</span>)</span>
+<span class="dash">-</span> <span class="feature">MVP lanzado con funcionalidades básicas de gestión de tareas</span>
+<span class="dash">-</span> <span class="feature">Autenticación implementada con <span class="tech">Auth0</span></span>
+<span class="dash">-</span> <span class="feature">UI básica con componentes reutilizables</span>
+<span class="dash">-</span> <span class="feature">Base de datos configurada en <span class="tech">Supabase</span></span>
+
+<span class="heading2">## Próximas Prioridades (<span class="date">Q2 2025</span>)</span>
+<span class="number">1.</span> <span class="feature">Implementar sistema de notificaciones en tiempo real</span>
+<span class="number">2.</span> <span class="feature">Añadir funcionalidad de notas (además de tareas)</span>
+<span class="number">3.</span> <span class="feature">Mejorar el dashboard con métricas y visualizaciones</span>
+<span class="number">4.</span> <span class="feature">Implementar funcionalidad de etiquetas y filtros avanzados</span>
+
+<span class="heading2">## <span class="date">Q3 2025</span></span>
+<span class="number">1.</span> <span class="feature">Añadir funcionalidades de colaboración</span>
+<span class="number">2.</span> <span class="feature">Integración con calendarios externos (<span class="tech">Google</span>, <span class="tech">Outlook</span>)</span>
+<span class="number">3.</span> <span class="feature">Apps móviles nativas (<span class="tech">iOS</span>/<span class="tech">Android</span>)</span>
+
+<span class="heading2">## Decisiones Técnicas Importantes</span>
+<span class="dash">-</span> <span class="decision">Se decidió usar <span class="tech">Next.js App Router</span> sobre <span class="tech">Pages Router</span> para aprovechar los Server Components</span>
+<span class="dash">-</span> <span class="decision"><span class="tech">Supabase</span> elegido sobre <span class="tech">Firebase</span> por mejor soporte de SQL y menor lock-in</span>
+<span class="dash">-</span> <span class="decision">Implementación de UI con <span class="tech">Tailwind</span> en lugar de un sistema de componentes para mayor flexibilidad</span>
+<span class="dash">-</span> <span class="decision">Decidimos <span class="negative">NO</span> implementar PWA en la primera versión para reducir complejidad</span>
+
+<span class="heading2">## Pruebas Anteriores</span>
+<span class="dash">-</span> <span class="negative">La implementación inicial con <span class="tech">GraphQL</span> fue abandonada por complejidad excesiva</span>
+<span class="dash">-</span> <span class="negative">El sistema de drag-and-drop con <span class="tech">react-beautiful-dnd</span> causó problemas de rendimiento</span></code></pre>
+                    </div>
+                </div>
+
+                <h3>Beneficios:</h3>
+                <ul>
+                    <li>Proporciona contexto sobre el estado actual del proyecto</li>
+                    <li>Informa sobre prioridades y dirección futura</li>
+                    <li>Documenta decisiones técnicas importantes</li>
+                    <li>Registra enfoques que no funcionaron</li>
+                </ul>
+
+                <div class="tip">
+                    <div class="tip-title">Uso efectivo</div>
+                    <p>Actualiza regularmente este archivo y etiquétalo en tus prompts cuando necesites que Cursor entienda el contexto más amplio del proyecto y sus objetivos.</p>
+                </div>
+            </section>
+
+            <section class="section" id="limitaciones">
+                <h2>16. Limitaciones de los Modelos</h2>
+                <p>Entender las limitaciones de los modelos de IA es crucial para usarlos eficazmente.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Verificar knowledge cutoff</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>¿Cuál es tu knowledge cutoff? Answer in short.</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">Importante</div>
+                    <p>Los modelos de IA tienen una fecha de corte de conocimiento. No pueden conocer información más reciente a menos que:</p>
+                    <ul>
+                        <li>Les proporciones esa información directamente</li>
+                        <li>Usen herramientas de búsqueda web externas</li>
+                    </ul>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">Buen enfoque para información reciente</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>¿Cuáles son las mejores prácticas para usar Server Actions en Next.js 14?
+
+Nota: Sé que tu conocimiento tiene un límite temporal. Si no estás seguro de las últimas actualizaciones, por favor indícalo y yo verificaré la documentación oficial.</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Mejores prácticas</div>
+                    <p>Para tecnologías recientes o en rápida evolución:</p>
+                    <ul>
+                        <li>Verifica la documentación oficial</li>
+                        <li>Usa búsquedas web para obtener información actualizada</li>
+                        <li>Proporciona enlaces o extractos de documentación cuando sea relevante</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section" id="depuracion">
+                <h2>17. Instrucciones de Depuración</h2>
+                <p>En lugar de limitarte a describir un error, pide a la IA instrucciones específicas para depurarlo.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de prompt "Tell me what to do"</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Estoy experimentando un error en mi aplicación Next.js donde las imágenes no se cargan correctamente. Recibo el error "Error: Failed to parse src "undefined" on `next/image`". Soy principiante en Next.js.
+
+Tell me what to do para depurar este problema paso a paso. ¿Qué herramientas debo usar y qué información debo buscar para identificar la causa raíz?</code></pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Beneficios</div>
+                    <p>Este enfoque:</p>
+                    <ul>
+                        <li>Te enseña técnicas de depuración mientras resuelves el problema</li>
+                        <li>Proporciona un plan sistemático en lugar de prueba y error</li>
+                        <li>Funciona bien incluso para errores complejos donde la causa no es obvia</li>
+                        <li>Obtiene información más específica para resolver el problema</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Sé honesto sobre tu nivel de experiencia</div>
+                    <p>Mencionar tu nivel de experiencia ayuda a la IA a ajustar sus instrucciones a tu conocimiento actual, evitando tanto explicaciones innecesariamente básicas como sugerencias demasiado avanzadas.</p>
+                </div>
+            </section>
+
+            <section class="section" id="mvp">
+                <h2>18. Enfoque MVP para Nuevas Funcionalidades</h2>
+                <p>Resistir la tentación de implementar todas las características a la vez es clave para un desarrollo efectivo.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Ejemplo de priorización MVP</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>Quiero implementar un sistema de comentarios en tareas que permita a los usuarios colaborar. He pensado en estas características:
+
+- Comentarios en tiempo real
+- Menciones de usuarios con @
+- Formato de texto enriquecido
+- Notificaciones por email
+- Reacciones con emojis
+- Hilos de respuestas
+- Vista de historial de edición
+- Archivos adjuntos
+- Comentarios privados vs públicos
+
+¿Cuál sería el MVP absolutamente esencial para lanzar esta función? ¿Qué debería priorizar primero?</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <div class="warning-title">Tentación del feature creep</div>
+                    <p>La IA no te detendrá si le pides implementar demasiadas características a la vez. Necesitas ser disciplinado y centrarte en lo que realmente importa para el MVP.</p>
+                </div>
+
+                <div class="tip">
+                    <div class="tip-title">Proceso de dos etapas</div>
+                    <p>David recomienda un proceso de dos etapas:</p>
+                    <ol>
+                        <li><strong>Brainstorming inicial:</strong> Enumera todas las ideas y características potenciales</li>
+                        <li><strong>Reducción a lo esencial:</strong> Identifica el 20% que proporciona el 80% del valor</li>
+                    </ol>
+                    <p>Después de algunas horas de desarrollo, revisa nuevamente para reducir aún más si es necesario.</p>
+                </div>
+            </section>
+
+            <section class="section" id="decisiones">
+                <h2>19. Decisiones Importantes</h2>
+                <p>No delegues decisiones estratégicas a la IA, mantén el control sobre la visión general del proyecto.</p>
+
+                <div class="example-container">
+                    <div class="example-header">Mal enfoque (dejando decisiones estratégicas a la IA)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>¿Qué arquitectura de base de datos debería usar para mi startup? Tengo usuarios, tareas, notas y proyectos. Implementa la mejor solución.</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">Buen enfoque (manteniendo control de decisiones estratégicas)</div>
+                    <div class="example-body">
+                        <pre><button class="copy-button" onclick="copyCode(this)">Copiar</button>   <code>He decidido usar una base de datos relacional (PostgreSQL) para mi aplicación de productividad porque necesito garantizar la integridad de los datos entre entidades relacionadas. 
+
+Necesito diseñar las siguientes tablas: users, tasks, notes y projects. He pensado en estas relaciones:
+- Un usuario puede tener muchas tareas y notas
+- Una tarea puede pertenecer a un proyecto opcional
+- Las notas pueden estar asociadas a una tarea opcional
+
+Por favor, ayúdame a implementar este esquema específico, sugiriendo los campos necesarios y las restricciones de clave foránea apropiadas.</code></pre>
+                    </div>
+                </div>
+
+                <h3>Regla general:</h3>
+                <ul>
+                    <li>Tú: decisiones estratégicas, arquitectura, dirección del proyecto</li>
+                    <li>IA: implementación, detalles técnicos, optimizaciones</li>
+                </ul>
+
+                <div class="warning">
+                    <div class="warning-title">Áreas para mantener control</div>
+                    <p>Decisiones críticas que no deberías delegar completamente a la IA:</p>
+                    <ul>
+                        <li>Arquitectura general del proyecto</li>
+                        <li>Elección de tecnologías principales</li>
+                        <li>Diseño de base de datos</li>
+                        <li>Estrategia de UI/UX</li>
+                        <li>Principios fundamentales de seguridad</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section" id="actividades">
+                <h2>Actividades Prácticas para el Workshop</h2>
+                <p>Aquí tienes algunas actividades que puedes implementar durante el workshop para que los participantes practiquen estas técnicas.</p>
+
+                <div class="example-container">
+                    <div class="example-header">1. Crear un archivo .curs.rules efectivo</div>
+                    <div class="example-body">
+                        <ul>
+                            <li>Divide a los asistentes en grupos de 2-3 personas</li>
+                            <li>Cada grupo crea un archivo .curs.rules para un proyecto hipotético (app de gestión de gastos, red social, etc.)</li>
+                            <li>Después de 15 minutos, los grupos intercambian sus archivos</li>
+                            <li>Discuten qué elementos son útiles y qué falta</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">2. Ejercicio de prompting</div>
+                    <div class="example-body">
+                        <ul>
+                            <li>Proporciona un problema de código común (ej. "Implementa un formulario de registro con validación")</li>
+                            <li>Cada participante escribe un prompt usando las técnicas aprendidas</li>
+                            <li>Comparan resultados y discuten qué técnicas fueron más efectivas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">3. Demostración de Whisper Flow</div>
+                    <div class="example-body">
+                        <ul>
+                            <li>Realiza una demostración en vivo de cómo usar Whisper Flow</li>
+                            <li>Los participantes prueban dictar un prompt complejo vs. escribirlo</li>
+                            <li>Comparan tiempos y resultados</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">4. Evaluar y mejorar comentarios de código</div>
+                    <div class="example-body">
+                        <ul>
+                            <li>Proporciona código con pocos comentarios</li>
+                            <li>Los participantes piden a Cursor que mejore los comentarios</li>
+                            <li>Discuten los resultados y qué información adicional ayudaría</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <div class="example-header">5. Simulación de depuración</div>
+                    <div class="example-body">
+                        <ul>
+                            <li>Presenta un error común en el código</li>
+                            <li>Los participantes practican el prompt "tell me what to do"</li>
+                            <li>Siguen las instrucciones de la IA para resolver el problema</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="conclusion">
+                <h2>Conclusión</h2>
+                <p>Estas técnicas y estrategias representan más de 400 horas de experiencia práctica con Cursor. Implementarlas puede transformar radicalmente tu flujo de trabajo y productividad.</p>
+
+                <div class="tip">
+                    <div class="tip-title">Recuerda</div>
+                    <p>La efectividad de la IA está limitada por:</p>
+                    <ul>
+                        <li>La calidad de tus prompts y el contexto que proporcionas</li>
+                        <li>Tu comprensión del código y la tecnología subyacente</li>
+                        <li>Tu capacidad para dirigir estratégicamente el proyecto</li>
+                    </ul>
+                    <p>Considera estas técnicas como una inversión a largo plazo en tu flujo de trabajo. A medida que los modelos de IA sigan evolucionando, estas prácticas serán aún más valiosas.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Scroll to sections smoothly
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add copy buttons to all code blocks
+        document.addEventListener('DOMContentLoaded', () => {
+            const preElements = document.querySelectorAll('pre');
+            
+            preElements.forEach(pre => {
+                // Wrap pre in a container
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                pre.parentNode.insertBefore(container, pre);
+                container.appendChild(pre);
+                
+                // Create and add button
+                const button = document.createElement('button');
+                button.className = 'copy-button';
+                button.textContent = 'Copiar';
+                container.appendChild(button);
+                
+                // Add click event
+                button.addEventListener('click', () => {
+                    const code = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
+                    navigator.clipboard.writeText(code)
+                        .then(() => {
+                            // Change button text temporarily
+                            const originalText = button.textContent;
+                            button.textContent = '¡Copiado!';
+                            setTimeout(() => {
+                                button.textContent = originalText;
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Error al copiar: ', err);
+                            button.textContent = 'Error';
+                        });
+                });
+            });
+        });
+
+        function copyCode(button) {
+            const codeContainer = button.nextElementSibling;
+            navigator.clipboard.writeText(codeContainer.textContent).then(() => {
+                button.textContent = "Copiado";
+                setTimeout(() => {
+                    button.textContent = "Copiar";
+                }, 2000);
+            }).catch(err => console.error("Error al copiar:", err));
+        }
+    </script>
+    </script>
+</body>
+</html>
